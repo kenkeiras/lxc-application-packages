@@ -1,0 +1,11 @@
+# Temporary editor files
+*#*
+*~
+*.swp
+
+# Python temporary files
+__pycache__
+*.pyc
+
+# Cache files
+cache/
