@@ -11,6 +11,7 @@ import string
 
 RANDOM_NAME_LENGTH = 10
 DEFAULT_CONFIG_FILE = 'config/default.conf'
+DEFAULT_GUI_CONFIG_FILE = 'config/gui_default.conf'
 
 def generate_random_name(length=RANDOM_NAME_LENGTH):
     chunks = []
@@ -64,8 +65,16 @@ def reload_config(container):
     return lxc.Container(container.name)
 
 
-def install(application,
-            distribution=distros.DEBIAN):
+def pick_configuration(distribution, application):
+    distro = distribution['handler']
+    if distro.is_graphical(application):
+        print('Installing as graphical application')
+        return DEFAULT_GUI_CONFIG_FILE
+    else:
+        return DEFAULT_CONFIG_FILE
+
+
+def install(application, distribution=distros.DEBIAN):
     if not distribution['handler'].has_application(application):
         print("Distribution {} doesn't have the application {}"
               .format(distribution['name'], application))
@@ -73,7 +82,9 @@ def install(application,
 
     try:
         container = create_lxc_instance(distribution, name_base=application)
-        configure(container)
+
+        configuration = pick_configuration(distribution, application)
+        configure(container, app_config_file=configuration)
         container = reload_config(container)
 
         assert(container.start())

@@ -85,6 +85,8 @@ def build_cache(repositories, identifier):
 
 
 class DebianDerived:
+    GRAPHICAL_APP_REQUIREMENTS = ['x11-common']
+
     def __init__(self, repositories, identifier):
         self.repositories = repositories
         self.identifier = identifier
@@ -108,6 +110,23 @@ class DebianDerived:
 
     def is_graphical(self, application):
         pkg_map = self.package_map()
+        dependencies = [application]
+        checked = set()
+        while len(dependencies) > 0:
+            dep = pkg_map[dependencies.pop()]
+            if 'Depends' not in dep:
+                continue
+
+            subdeps = [subdep.split(' ', 1)[0] for subdep in dep['Depends'].split(', ')]
+            for subdep in subdeps:
+                if subdep in self.GRAPHICAL_APP_REQUIREMENTS:
+                    return True
+
+                if not subdep in checked:
+                    checked.add(subdep)
+                    dependencies.append(subdep)
+
+        return False
 
 
     def configure_first_time(self, container):
