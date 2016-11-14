@@ -33,6 +33,13 @@ def get_argparser() -> argparse.ArgumentParser:
                                 type=str,
                                 help='the application to be installed')
 
+    uninstall_parser = subparsers.add_parser(
+        'uninstall',
+        help='remove a installed application')
+    uninstall_parser.add_argument('application',
+                                type=str,
+                                help='the application to be removed')
+
     # Run subparser
     run_parser = subparsers.add_parser('run', help='run a application')
     run_parser.add_argument('application',
@@ -56,6 +63,10 @@ def cli_install(args) -> int:
     install.install(application=args.application)
     return 0
 
+def cli_uninstall(args) -> int:
+    install.uninstall(application=args.application)
+    return 0
+
 def cli_run(args) -> int:
     run.run(application=args.application, arguments=args.arguments)
     return 0
@@ -69,6 +80,9 @@ if __name__ == '__main__':
 
     elif args.command == 'install':
         retcode = cli_install(args)
+
+    elif args.command == 'uninstall':
+        retcode = cli_uninstall(args)
 
     elif args.command == 'run':
         retcode = cli_run(args)

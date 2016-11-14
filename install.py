@@ -3,6 +3,7 @@
 import lxc
 import distributions as distros
 from configuration import Configuration
+import collection
 
 import shutil
 import os
@@ -72,6 +73,13 @@ def pick_configuration(distribution, application):
         return DEFAULT_GUI_CONFIG_FILE
     else:
         return DEFAULT_CONFIG_FILE
+
+
+def uninstall(application):
+    import run
+    container = collection.get_container_from_application(application)
+    assert(container.stop())
+    assert(container.destroy())
 
 
 def install(application, distribution=distros.DEBIAN):
