@@ -29,7 +29,7 @@ def get_argparser() -> argparse.ArgumentParser:
     install_parser = subparsers.add_parser(
         'install',
         help='install a new application')
-    install_parser.add_argument('name',
+    install_parser.add_argument('application',
                                 type=str,
                                 help='the application to be installed')
 
@@ -38,6 +38,11 @@ def get_argparser() -> argparse.ArgumentParser:
     run_parser.add_argument('application',
                             type=str,
                             help='the application to be ran')
+
+    run_parser.add_argument('arguments',
+                            type=str,
+                            nargs='*',
+                            help='the application arguments')
 
     return parser
 
@@ -52,7 +57,7 @@ def cli_install(args) -> int:
     return 0
 
 def cli_run(args) -> int:
-    run.async_run(application=args.application)
+    run.run(application=args.application, arguments=args.arguments)
     return 0
 
 

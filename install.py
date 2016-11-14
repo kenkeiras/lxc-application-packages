@@ -1,1 +1,86 @@
 # coding: utf-8
+
+import lxc
+import distributions as distros
+from configuration import Configuration
+
+import shutil
+import os
+import random
+import string
+
+RANDOM_NAME_LENGTH = 10
+DEFAULT_CONFIG_FILE = 'config/default.conf'
+
+def generate_random_name(length=RANDOM_NAME_LENGTH):
+    chunks = []
+    for _ in range(length):
+        chunks.append(random.choice(string.ascii_lowercase))
+    return ''.join(chunks)
+
+
+def get_available_name_from_base(name_base):
+    name = 'lap-{}'.format(name_base)
+    containers = lxc.list_containers()
+    if name in containers:
+        i = 2
+        while '{name}-{i}'.format(name=name, i=i) in containers:
+            i += 1
+        name = '{name}-{i}'.format(name=name, i=i)
+    return name
+
+
+def create_lxc_instance(distribution, name_base=None):
+    if name_base is None:
+        name_base = generate_random_name()
+
+    name = get_available_name_from_base(name_base)
+    print('Creating container {}'.format(name))
+    container = distribution['handler'].create_instance(name)
+    return container
+
+
+def configure(container, app_config_file=DEFAULT_CONFIG_FILE):
+    assert(container.save_config())
+
+    config_file = os.path.join(container.get_config_path(),
+                               container.name, 'config')
+    config = Configuration(config_file)
+
+    with open(app_config_file, 'rt') as f:
+        template = string.Template(f.read())
+
+    with open(config_file, 'wt') as f:
+        f.write(template.substitute(
+            rootfs=config.rootfs,
+            container_name=config.container_name,
+            hwaddr=config.hwaddr,
+        ))
+
+    assert(container.load_config())
+
+
+def reload_config(container):
+    return lxc.Container(container.name)
+
+
+def install(application,
+            distribution=distros.DEBIAN):
+    if not distribution['handler'].has_application(application):
+        print("Distribution {} doesn't have the application {}"
+              .format(distribution['name'], application))
+        return 1
+
+    try:
+        container = create_lxc_instance(distribution, name_base=application)
+        configure(container)
+        container = reload_config(container)
+
+        assert(container.start())
+    except AssertionError as e:
+        container.destroy()
+        raise
+
+    distribution['handler'].configure_first_time(container)
+    distribution['handler'].install_application(container, application)
+    return 0

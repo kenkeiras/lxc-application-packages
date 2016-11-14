@@ -1,7 +1,10 @@
 # coding: utf-8
 
+import lxc
+
 from . import readers
 
+import getpass
 import re
 import os.path
 import hashlib
@@ -90,3 +93,40 @@ class DebianDerived:
         build_cache(self.repositories, self.identifier)
         reader = DebianCacheReader(self.repositories, self.identifier)
         yield from reader.get_packages()
+
+
+    def package_map(self):
+        pkg_map = {}
+        for pkg in self.get_packages():
+            pkg_map[pkg['Package']] = pkg
+        return pkg_map
+
+
+    def has_application(self, application):
+        return len([True for pkg in self.get_packages() if pkg['Package'] == application]) > 0
+
+
+    def is_graphical(self, application):
+        pkg_map = self.package_map()
+
+
+    def configure_first_time(self, container):
+        # Create the user
+        username = getpass.getuser()
+        container.attach_wait(lxc.attach_run_command, ['useradd', username])
+        container.attach_wait(lxc.attach_run_command, ['mkdir', '/home/{}'.format(username)])
+        container.attach_wait(lxc.attach_run_command, ['chown', '-R', username, '/home/{}'.format(username)])
+
+        # Create the script to drop privileges on entrance
+        container.attach_wait(lxc.attach_run_command, ['touch', '/bin/launch'])
+        container.attach_wait(lxc.attach_run_command, ['chmod', '777', '/bin/launch'])
+        with open(os.path.join(container.get_config_item('lxc.rootfs'), 'bin', 'launch'), 'wt') as f:
+            f.write('#!/bin/sh' '\n\n' 'cd /home/{username}' '\n' 'su -c "$*" {username}'
+                    .format(username=username))
+
+        container.attach_wait(lxc.attach_run_command, ['chmod', '111', '/bin/launch'])
+
+
+    def install_application(self, container, application):
+        container.attach_wait(lxc.attach_run_command, ['apt', 'update'])
+        container.attach_wait(lxc.attach_run_command, ['apt', 'install', application])

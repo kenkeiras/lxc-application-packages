@@ -1,5 +1,7 @@
 # coding: utf-8
 
+import lxc
+
 from .debian_derived import *
 
 class DebianStretch(DebianDerived):
@@ -9,5 +11,13 @@ class DebianStretch(DebianDerived):
             DebianRepository('http://security.debian.org/', 'stretch/updates', ['main']),
         ],
         identifier='debian.stretch')
+
+    def create_instance(self, name):
+        container = lxc.Container(name=name)
+        container.create(template='download', args=('-d', 'debian',
+                                                    '-r', 'stretch',
+                                                    '-a', 'amd64'))
+        return container
+
 
 handler = DebianStretch()
