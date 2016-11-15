@@ -10,6 +10,9 @@ import os.path
 import hashlib
 import requests
 
+from os.path import expanduser
+LOCAL_PATH = os.path.join(expanduser("~"), '.local', 'share', 'lap')
+
 class DebianRepository:
     def __init__(self, uri, suite, components, architecture='amd64'):
         self.uri = uri
@@ -74,7 +77,7 @@ class DebianCacheReader:
 
 
 def get_cache_path(identifier):
-    return 'cache/' + identifier + '.cache'
+    return os.path.join(LOCAL_PATH, 'cache', identifier + '.cache')
 
 
 def build_cache(repositories, identifier):
