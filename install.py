@@ -76,20 +76,30 @@ def pick_configuration(distribution, application):
 
 
 def uninstall(application):
-    import run
-    container = collection.get_container_from_application(application)
+    try:
+        container = collection.get_container_from_application(application)
+    except collection.ContainerNotInstalledException as e:
+        print("Application '{}' not found".format(e.args[0]))
+        return 1
+
     assert(container.stop())
     assert(container.destroy())
+    collection.deregister(application)
+    return 0
 
 
-def install(application, distribution=distros.DEBIAN):
+def install(application, name=None, distribution=distros.DEBIAN):
+    if name is None:
+        name = application
+
     if not distribution['handler'].has_application(application):
         print("Distribution {} doesn't have the application {}"
               .format(distribution['name'], application))
         return 1
 
     try:
-        container = create_lxc_instance(distribution, name_base=application)
+        container = create_lxc_instance(distribution, name_base=name)
+        collection.register(container, distribution, name)
 
         configuration = pick_configuration(distribution, application)
         configure(container, app_config_file=configuration)

@@ -9,7 +9,7 @@ def launch(args):
 def run(application, arguments):
     try:
         container = collection.get_container_from_application(application)
-    except ContainerNotInstalledException as e:
+    except collection.ContainerNotInstalledException as e:
         print("Application '{}' not found".format(e.args[0]))
         return 1
 

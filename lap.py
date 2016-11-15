@@ -29,6 +29,11 @@ def get_argparser() -> argparse.ArgumentParser:
     install_parser = subparsers.add_parser(
         'install',
         help='install a new application')
+    install_parser.add_argument('-n', '--name',
+                                type=str,
+                                nargs='?',
+                                help='name given to the application')
+
     install_parser.add_argument('application',
                                 type=str,
                                 help='the application to be installed')
@@ -60,7 +65,7 @@ def cli_search(args) -> int:
     return 0 if ok else 1
 
 def cli_install(args) -> int:
-    install.install(application=args.application)
+    install.install(application=args.application, name=args.name)
     return 0
 
 def cli_uninstall(args) -> int:
