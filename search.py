@@ -1,11 +1,13 @@
 # coding: utf-8
 
 import distributions as distros
+import collection
 
 def search(keywords,
            distribution=distros.DEBIAN,
            valid_keys=('Description', 'Tag', 'Section', 'Package')):
 
+    installed_apps = collection.get_installed_apps()
     distro = distros.get_handler(distribution)
     results = []
     for package in distro.get_packages():
@@ -22,6 +24,10 @@ def search(keywords,
                 break
         else:
             results.append(package)
-            print("{Package}: {Description}".format(**package))
+
+            marks = ''
+            if package['Package'] in installed_apps:
+                marks = '[installed]'
+            print("{Package}: {Description} {marks}".format(**package, marks=marks))
 
     return results

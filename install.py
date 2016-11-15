@@ -88,7 +88,7 @@ def uninstall(application):
     return 0
 
 
-def install(application, name=None, distribution=distros.DEBIAN):
+def install(application, name=None, distribution=distros.DEBIAN, assume_yes=False):
     if name is None:
         name = application
 
@@ -99,7 +99,7 @@ def install(application, name=None, distribution=distros.DEBIAN):
 
     try:
         container = create_lxc_instance(distribution, name_base=name)
-        collection.register(container, distribution, name)
+        collection.register(container, distribution, name, application)
 
         configuration = pick_configuration(distribution, application)
         configure(container, app_config_file=configuration)
@@ -111,5 +111,5 @@ def install(application, name=None, distribution=distros.DEBIAN):
         raise
 
     distribution['handler'].configure_first_time(container)
-    distribution['handler'].install_application(container, application)
+    distribution['handler'].install_application(container, application, assume_yes=assume_yes)
     return 0

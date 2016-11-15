@@ -7,6 +7,7 @@ import argparse
 import search
 import install
 import run
+import collection
 
 def get_argparser() -> argparse.ArgumentParser:
     # Base  parser
@@ -29,6 +30,10 @@ def get_argparser() -> argparse.ArgumentParser:
     install_parser = subparsers.add_parser(
         'install',
         help='install a new application')
+    install_parser.add_argument('-y', '--assume-yes',
+                                action='store_true',
+                                help='assume `yes` on the installation decisions')
+
     install_parser.add_argument('-n', '--name',
                                 type=str,
                                 nargs='?',
@@ -38,6 +43,7 @@ def get_argparser() -> argparse.ArgumentParser:
                                 type=str,
                                 help='the application to be installed')
 
+    # Remove subparser
     uninstall_parser = subparsers.add_parser(
         'uninstall',
         help='remove a installed application')
@@ -56,6 +62,10 @@ def get_argparser() -> argparse.ArgumentParser:
                             nargs='*',
                             help='the application arguments')
 
+    # List subparser
+    list_parser = subparsers.add_parser('list', help='list installed applications')
+
+
     return parser
 
 
@@ -65,7 +75,8 @@ def cli_search(args) -> int:
     return 0 if ok else 1
 
 def cli_install(args) -> int:
-    install.install(application=args.application, name=args.name)
+    install.install(application=args.application, name=args.name,
+                    assume_yes=args.assume_yes)
     return 0
 
 def cli_uninstall(args) -> int:
@@ -74,6 +85,16 @@ def cli_uninstall(args) -> int:
 
 def cli_run(args) -> int:
     run.run(application=args.application, arguments=args.arguments)
+    return 0
+
+
+def cli_list(args) -> int:
+    for name, app in collection.get_registry().items():
+        print("{name} [{appname}][{container_name}]"
+              .format(name=name,
+                      appname=app['application']['name'],
+                      container_name=app['container']['name']
+              ))
     return 0
 
 
@@ -91,5 +112,8 @@ if __name__ == '__main__':
 
     elif args.command == 'run':
         retcode = cli_run(args)
+
+    elif args.command == 'list':
+        retcode = cli_list(args)
 
     exit(retcode)

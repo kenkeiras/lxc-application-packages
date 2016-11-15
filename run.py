@@ -14,5 +14,6 @@ def run(application, arguments):
         return 1
 
     container.start()
+    command = collection.get_command_from_application(application)
     return container.attach_wait(lxc.attach_run_command,
-                                 launch([application] + list(arguments)))
+                                 launch([command] + list(arguments)))

@@ -18,11 +18,24 @@ def get_registry():
             return yaml.load(f.read())
     return {}
 
+
 def get_container_from_application(application):
     registry = get_registry()
     if application not in registry:
         raise ContainerNotInstalledException(application)
     return lxc.Container(registry[application]['container']['name'])
+
+
+def get_command_from_application(application):
+    registry = get_registry()
+    if application not in registry:
+        raise ContainerNotInstalledException(application)
+    return registry[application]['application']['name']
+
+
+def get_installed_apps():
+    registry = get_registry()
+    return set([app['application']['name'] for _name, app in registry.items()])
 
 
 def save_to_registry(registry):
@@ -37,14 +50,17 @@ def deregister(application):
     save_to_registry(registry)
 
 
-def register(container, distribution, application):
+def register(container, distribution, name, application):
     registry = get_registry()
-    registry[application] = {
+    registry[name] = {
         'container': {
             'name': container.name,
         },
         'distribution': {
             'name': distribution['name'],
+        },
+        'application': {
+            'name': application,
         }
     }
 
