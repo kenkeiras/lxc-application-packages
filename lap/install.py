@@ -1,9 +1,9 @@
 # coding: utf-8
 
 import lxc
-import distributions as distros
-from configuration import Configuration
-import collection
+from . import distributions as distros
+from .configuration import local_config_path, Configuration
+from . import collection
 
 import shutil
 import os
@@ -11,8 +11,8 @@ import random
 import string
 
 RANDOM_NAME_LENGTH = 10
-DEFAULT_CONFIG_FILE = 'config/default.conf'
-DEFAULT_GUI_CONFIG_FILE = 'config/gui_default.conf'
+DEFAULT_CONFIG_FILE = local_config_path('default.conf')
+DEFAULT_GUI_CONFIG_FILE = local_config_path('gui_default.conf')
 
 def generate_random_name(length=RANDOM_NAME_LENGTH):
     chunks = []

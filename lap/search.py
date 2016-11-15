@@ -1,7 +1,7 @@
 # coding: utf-8
 
-import distributions as distros
-import collection
+from . import distributions as distros
+from . import collection
 
 def search(keywords,
            distribution=distros.DEBIAN,

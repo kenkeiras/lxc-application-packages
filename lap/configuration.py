@@ -2,6 +2,12 @@
 
 from configparser import ConfigParser
 import itertools
+import os
+
+def local_config_path(fname):
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        'config/',
+                        fname)
 
 class Configuration:
     def __init__(self, configuration_file):

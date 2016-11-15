@@ -9,3 +9,7 @@ __pycache__
 
 # Cache files
 cache/
+
+# Build files
+dist/
+*.egg-info/

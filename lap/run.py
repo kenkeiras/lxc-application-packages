@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import lxc
-import collection
+from . import collection
 
 def launch(args):
     return ["/bin/launch"] + args

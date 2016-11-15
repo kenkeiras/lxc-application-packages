@@ -1,0 +1,2 @@
+# Configuration files
+include lap/config/*.conf

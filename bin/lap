@@ -4,10 +4,10 @@
 import os
 import argparse
 
-import search
-import install
-import run
-import collection
+from lap import search
+from lap import install
+from lap import run
+from lap import collection
 
 def get_argparser() -> argparse.ArgumentParser:
     # Base  parser
