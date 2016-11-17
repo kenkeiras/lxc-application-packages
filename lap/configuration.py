@@ -30,3 +30,15 @@ class Configuration:
     @property
     def hwaddr(self):
         return self.data['lxc.network.hwaddr']
+
+    @property
+    def net_link(self):
+        return self.data['lxc.network.link']
+
+    @property
+    def ipv4_addr(self):
+        return self.data['lxc.network.ipv4']
+
+    @property
+    def ipv4_gateway(self):
+        return self.data['lxc.network.ipv4.gateway']

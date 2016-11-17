@@ -57,6 +57,9 @@ def configure(container, app_config_file=DEFAULT_CONFIG_FILE):
             rootfs=config.rootfs,
             container_name=config.container_name,
             hwaddr=config.hwaddr,
+            net_link=config.net_link,
+            ipv4_addr=config.ipv4_addr,
+            ipv4_gateway=config.ipv4_gateway,
         ))
 
     assert(container.load_config())
