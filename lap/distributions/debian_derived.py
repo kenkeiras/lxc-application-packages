@@ -88,7 +88,7 @@ def build_cache(repositories, identifier):
 
 
 class DebianDerived:
-    GRAPHICAL_APP_REQUIREMENTS = ['x11-common']
+    GRAPHICAL_APP_REQUIREMENTS = ['x11-common', 'libx11-data', 'libdrm2']
 
     def __init__(self, repositories, identifier):
         self.repositories = repositories
