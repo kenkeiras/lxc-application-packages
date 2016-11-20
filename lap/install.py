@@ -2,17 +2,14 @@
 
 import lxc
 from . import distributions as distros
-from .configuration import local_config_path, Configuration
+from . import configuration
 from . import collection
 
-import shutil
 import os
 import random
 import string
 
 RANDOM_NAME_LENGTH = 10
-DEFAULT_CONFIG_FILE = local_config_path('default.conf')
-DEFAULT_GUI_CONFIG_FILE = local_config_path('gui_default.conf')
 
 def generate_random_name(length=RANDOM_NAME_LENGTH):
     chunks = []
@@ -42,30 +39,7 @@ def create_lxc_instance(distribution, name_base=None):
     return container
 
 
-def configure(container, app_config_file=DEFAULT_CONFIG_FILE):
-    assert(container.save_config())
-
-    config_file = os.path.join(container.get_config_path(),
-                               container.name, 'config')
-    config = Configuration(config_file)
-
-    with open(app_config_file, 'rt') as f:
-        template = string.Template(f.read())
-
-    with open(config_file, 'wt') as f:
-        f.write(template.substitute(
-            rootfs=config.rootfs,
-            container_name=config.container_name,
-            hwaddr=config.hwaddr,
-            net_link=config.net_link,
-            ipv4_addr=config.ipv4_addr,
-            ipv4_gateway=config.ipv4_gateway,
-        ))
-
-    assert(container.load_config())
-
-
-def reload_config(container):
+def reload_container(container):
     return lxc.Container(container.name)
 
 
@@ -73,9 +47,9 @@ def pick_configuration(distribution, application):
     distro = distribution['handler']
     if distro.is_graphical(application):
         print('Installing as graphical application')
-        return DEFAULT_GUI_CONFIG_FILE
+        return configuration.DEFAULT_GUI_CONFIG_FILE
     else:
-        return DEFAULT_CONFIG_FILE
+        return configuration.DEFAULT_CONFIG_FILE
 
 
 def uninstall(application):
@@ -102,11 +76,12 @@ def install(application, name=None, distribution=distros.DEBIAN, assume_yes=Fals
 
     try:
         container = create_lxc_instance(distribution, name_base=name)
-        collection.register(container, distribution, name, application)
+        configuration_type = pick_configuration(distribution, application)
+        collection.register(container, distribution, name, application,
+                            configuration={'type': configuration_type})
 
-        configuration = pick_configuration(distribution, application)
-        configure(container, app_config_file=configuration)
-        container = reload_config(container)
+        configuration.configure(container, app_config_file=configuration_type)
+        container = reload_container(container)
 
         assert(container.start())
     except AssertionError as e:

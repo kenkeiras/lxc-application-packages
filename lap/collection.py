@@ -50,7 +50,7 @@ def deregister(application):
     save_to_registry(registry)
 
 
-def register(container, distribution, name, application):
+def register(container, distribution, name, application, configuration={}):
     registry = get_registry()
     registry[name] = {
         'container': {
@@ -61,7 +61,15 @@ def register(container, distribution, name, application):
         },
         'application': {
             'name': application,
-        }
+        },
+        'mount_points': {},
+        'configuration': configuration
     }
 
+
+    save_to_registry(registry)
+
+def register_mount_point(application, host_dir, guest_dir):
+    registry = get_registry()
+    registry[application]['mount_points'][guest_dir] = host_dir
     save_to_registry(registry)

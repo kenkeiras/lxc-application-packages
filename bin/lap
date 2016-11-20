@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
+import sys
 import os
 import argparse
 
@@ -8,6 +9,7 @@ from lap import search
 from lap import install
 from lap import run
 from lap import collection
+from lap import configuration
 
 def get_argparser() -> argparse.ArgumentParser:
     # Base  parser
@@ -59,6 +61,22 @@ def get_argparser() -> argparse.ArgumentParser:
                                 type=str,
                                 help='the application to be removed')
 
+    # Mount subparser
+    mount_parser = subparsers.add_parser('mount',
+                                        help='mount a host directory in the application')
+    mount_parser.add_argument('application',
+                              type=str,
+                              help='application name')
+
+    mount_parser.add_argument('-hd', '--host_directory',
+                              required=True,
+                              type=str,
+                              help='host directory path')
+
+    mount_parser.add_argument('-gd', '--guest_directory',
+                              required=True,
+                              type=str,
+                              help='guest directory path')
 
     # Info subparser
     info_parser = subparsers.add_parser('info',
@@ -110,6 +128,16 @@ def cli_info(args) -> int:
     return 0
 
 
+def cli_mount(args) -> int:
+    try:
+        configuration.add_mount_point(application=args.application,
+                                      host_directory=args.host_directory,
+                                      guest_directory=args.guest_directory)
+        return 0
+    except configuration.RunningContainerException as e:
+        print("Error: Directories can't be mounted within a running application.\n"
+              "The application can be stopped with `lap stop '{}'`".format(e.args[0]))
+        return 1
 
 def cli_stop(args) -> int:
     container = collection.get_container_from_application(args.application)
@@ -137,6 +165,8 @@ if __name__ == '__main__':
     elif args.command == 'info':
         retcode = cli_info(args)
 
+    elif args.command == 'mount':
+        retcode = cli_mount(args)
 
     elif args.command == 'stop':
         retcode = cli_stop(args)
