@@ -51,6 +51,11 @@ def get_argparser() -> argparse.ArgumentParser:
                                 type=str,
                                 help='the application to be removed')
 
+
+    # Info subparser
+    info_parser = subparsers.add_parser('info',
+                                        help='retrieve information installed applications')
+
     # Run subparser
     run_parser = subparsers.add_parser('run', help='run a application')
     run_parser.add_argument('application',
@@ -62,10 +67,6 @@ def get_argparser() -> argparse.ArgumentParser:
                             nargs='*',
                             help='the application arguments')
 
-    # List subparser
-    list_parser = subparsers.add_parser('list', help='list installed applications')
-
-
     return parser
 
 
@@ -74,21 +75,24 @@ def cli_search(args) -> int:
     ok = len(results) > 0
     return 0 if ok else 1
 
+
 def cli_install(args) -> int:
     install.install(application=args.application, name=args.name,
                     assume_yes=args.assume_yes)
     return 0
 
+
 def cli_uninstall(args) -> int:
     install.uninstall(application=args.application)
     return 0
+
 
 def cli_run(args) -> int:
     run.run(application=args.application, arguments=args.arguments)
     return 0
 
 
-def cli_list(args) -> int:
+def cli_info(args) -> int:
     for name, app in collection.get_registry().items():
         print("{name} [{appname}][{container_name}]"
               .format(name=name,
@@ -113,7 +117,8 @@ if __name__ == '__main__':
     elif args.command == 'run':
         retcode = cli_run(args)
 
-    elif args.command == 'list':
-        retcode = cli_list(args)
+    elif args.command == 'info':
+        retcode = cli_info(args)
+
 
     exit(retcode)
