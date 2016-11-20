@@ -43,6 +43,14 @@ def get_argparser() -> argparse.ArgumentParser:
                                 type=str,
                                 help='the application to be installed')
 
+    # Stop subparser
+    stop_parser = subparsers.add_parser(
+        'stop',
+        help='forcibly stop an application')
+    stop_parser.add_argument('application',
+                                type=str,
+                                help='the application to be stopped')
+
     # Remove subparser
     uninstall_parser = subparsers.add_parser(
         'uninstall',
@@ -102,6 +110,15 @@ def cli_info(args) -> int:
     return 0
 
 
+
+def cli_stop(args) -> int:
+    container = collection.get_container_from_application(args.application)
+    if container.stop():
+        return 0
+    else:
+        return 1
+
+
 if __name__ == '__main__':
     parser = get_argparser()
     args = parser.parse_args()
@@ -120,5 +137,8 @@ if __name__ == '__main__':
     elif args.command == 'info':
         retcode = cli_info(args)
 
+
+    elif args.command == 'stop':
+        retcode = cli_stop(args)
 
     exit(retcode)
