@@ -6,6 +6,8 @@ import yaml
 import os
 from os.path import expanduser
 
+from . import distributions as distros
+
 LOCAL_PATH = os.path.join(expanduser("~"), '.local', 'share', 'lap')
 CONTAINERS_REGISTRY_PATH = os.path.join(LOCAL_PATH, 'containers.yml')
 
@@ -36,6 +38,14 @@ def get_command_from_application(application):
 def get_installed_apps():
     registry = get_registry()
     return set([app['application']['name'] for _name, app in registry.items()])
+
+
+def get_distribution_from_application(application):
+    registry = get_registry()
+    if application not in registry:
+        raise ContainerNotInstalledException(application)
+    distro = registry[application]['distribution']['name']
+    return distros.get_map()[distro]
 
 
 def save_to_registry(registry):

@@ -9,14 +9,16 @@ DEBIAN = {
 }
 
 
+allowed = string.ascii_uppercase + '_'
+_locals = locals()
+distros = [_locals[distro]
+           for distro
+           in dir()
+           if all(map(lambda x: x in allowed, distro))]
+
 def get_map():
     distro_map = {}
-    allowed = string.ascii_uppercase + '_'
-    for distro in [distro
-                   for distro
-                   in dir()
-                   if all(map(lambda x: x in allowed, distro))]:
-
+    for distro in distros:
         distro_map[distro['name']] = distro
 
     return distro_map

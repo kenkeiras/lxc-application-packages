@@ -28,7 +28,7 @@ def get_argparser() -> argparse.ArgumentParser:
                                nargs='+',
                                help='the keywords to search')
 
-    # Build subparser
+    # Install subparser
     install_parser = subparsers.add_parser(
         'install',
         help='install a new application')
@@ -44,6 +44,18 @@ def get_argparser() -> argparse.ArgumentParser:
     install_parser.add_argument('application',
                                 type=str,
                                 help='the application to be installed')
+
+    # Upgrade subparser
+    upgrade_parser = subparsers.add_parser(
+        'upgrade',
+        help='upgrade a application')
+    upgrade_parser.add_argument('-y', '--assume-yes',
+                                action='store_true',
+                                help='assume `yes` on the upgrade decisions')
+
+    upgrade_parser.add_argument('application',
+                                type=str,
+                                help='the application to be upgraded')
 
     # Stop subparser
     stop_parser = subparsers.add_parser(
@@ -107,6 +119,11 @@ def cli_install(args) -> int:
                     assume_yes=args.assume_yes)
     return 0
 
+def cli_upgrade(args) -> int:
+    run.upgrade(application=args.application,
+                assume_yes=args.assume_yes)
+    return 0
+
 
 def cli_uninstall(args) -> int:
     install.uninstall(application=args.application)
@@ -155,6 +172,9 @@ if __name__ == '__main__':
 
     elif args.command == 'install':
         retcode = cli_install(args)
+
+    elif args.command == 'upgrade':
+        retcode = cli_upgrade(args)
 
     elif args.command == 'uninstall':
         retcode = cli_uninstall(args)

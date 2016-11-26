@@ -157,3 +157,14 @@ class DebianDerived:
 
         container.attach_wait(lxc.attach_run_command, ['apt', 'update'])
         container.attach_wait(lxc.attach_run_command, ['apt', 'install'] + flags + [application])
+
+
+    def upgrade(self, container, assume_yes=False):
+
+        flags = []
+        if assume_yes:
+            flags += ['--assume-yes']
+
+        assert(container.start())
+        container.attach_wait(lxc.attach_run_command, ['apt', 'update'])
+        container.attach_wait(lxc.attach_run_command, ['apt', 'upgrade'] + flags)
