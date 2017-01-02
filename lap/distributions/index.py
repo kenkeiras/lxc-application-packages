@@ -8,6 +8,13 @@ DEBIAN = {
     'handler': debian.handler,
 }
 
+from . import gentoo
+GENTOO = {
+    'name': 'gentoo',
+    'module': gentoo,
+    'handler': gentoo.handler,
+}
+
 
 allowed = string.ascii_uppercase + '_'
 _locals = locals()

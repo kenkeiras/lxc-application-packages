@@ -132,7 +132,7 @@ class DebianDerived:
         return False
 
 
-    def configure_first_time(self, container):
+    def configure_first_time(self, container, configuration):
         # Create the user
         username = getpass.getuser()
         container.attach_wait(lxc.attach_run_command, ['useradd', username])
