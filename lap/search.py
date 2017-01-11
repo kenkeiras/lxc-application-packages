@@ -4,7 +4,7 @@ from . import distributions as distros
 from . import collection
 
 def search(keywords,
-           distribution=distros.GENTOO,
+           distribution=distros.ARCH,
            valid_keys=('Description', 'Tag', 'Section', 'Package')):
 
     installed_apps = collection.get_installed_apps()

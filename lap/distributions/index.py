@@ -4,6 +4,7 @@ import string
 from . import debian
 DEBIAN = {
     'name': 'debian',
+    'lxc_name': 'debian',
     'module': debian,
     'handler': debian.handler,
 }
@@ -11,10 +12,18 @@ DEBIAN = {
 from . import gentoo
 GENTOO = {
     'name': 'gentoo',
+    'lxc_name': 'gentoo',
     'module': gentoo,
     'handler': gentoo.handler,
 }
 
+from . import arch
+ARCH = {
+    'name': 'arch',
+    'lxc_name': 'archlinux',
+    'module': arch,
+    'handler': arch.handler,
+}
 
 allowed = string.ascii_uppercase + '_'
 _locals = locals()

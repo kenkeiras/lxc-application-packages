@@ -85,7 +85,7 @@ def configure(container, distribution, app_config_file=DEFAULT_CONFIG_FILE, moun
     with open(config_file, 'wt') as f:
         # Write base template
         f.write(template.substitute(
-            distro_name=distribution['name'],
+            distro_name=distribution['lxc_name'],
             rootfs=config.rootfs,
             container_name=config.container_name,
             hwaddr=config.hwaddr,

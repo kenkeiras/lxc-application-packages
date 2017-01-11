@@ -65,7 +65,7 @@ def uninstall(application):
     return 0
 
 
-def install(application, name=None, distribution=distros.GENTOO, assume_yes=False):
+def install(application, name=None, distribution=distros.ARCH, assume_yes=False):
     if name is None:
         name = application
 
