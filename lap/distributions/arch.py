@@ -13,9 +13,7 @@ import tarfile
 import json
 import itertools
 
-from os.path import expanduser
-LOCAL_PATH = os.path.join(expanduser("~"), '.local', 'share', 'lap')
-
+from ..conventions import LOCAL_PATH
 
 def build_hierarchy(tar_cache):
     members = tar_cache.getmembers()

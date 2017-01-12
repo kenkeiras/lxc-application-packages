@@ -25,6 +25,14 @@ ARCH = {
     'handler': arch.handler,
 }
 
+from . import fedora
+FEDORA = {
+    'name': 'fedora',
+    'lxc_name': 'fedora',
+    'module': fedora,
+    'handler': fedora.handler,
+}
+
 allowed = string.ascii_uppercase + '_'
 _locals = locals()
 distros = [_locals[distro]

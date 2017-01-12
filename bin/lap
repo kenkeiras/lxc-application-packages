@@ -137,10 +137,11 @@ def cli_run(args) -> int:
 
 def cli_info(args) -> int:
     for name, app in collection.get_registry().items():
-        print("{name} [{appname}][{container_name}]"
+        print("{name} [{appname}][{container_name}][{distro}]"
               .format(name=name,
                       appname=app['application']['name'],
-                      container_name=app['container']['name']
+                      container_name=app['container']['name'],
+                      distro=app['distribution']['name'],
               ))
     return 0
 

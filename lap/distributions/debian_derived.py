@@ -10,8 +10,7 @@ import os.path
 import hashlib
 import requests
 
-from os.path import expanduser
-LOCAL_PATH = os.path.join(expanduser("~"), '.local', 'share', 'lap')
+from ..conventions import LOCAL_PATH
 
 class DebianRepository:
     def __init__(self, uri, suite, components, architecture='amd64'):
