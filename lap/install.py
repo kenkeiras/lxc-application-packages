@@ -80,7 +80,7 @@ def install(application, name=None, distribution=distros.DEBIAN, assume_yes=Fals
         collection.register(container, distribution, name, application,
                             configuration={'type': configuration_type})
 
-        configuration.configure(container, app_config_file=configuration_type)
+        config = configuration.configure(container, distribution, app_config_file=configuration_type)
         container = reload_container(container)
 
         assert(container.start())
@@ -88,6 +88,8 @@ def install(application, name=None, distribution=distros.DEBIAN, assume_yes=Fals
         container.destroy()
         raise
 
-    distribution['handler'].configure_first_time(container)
+    distribution['handler'].configure_first_time(container, config)
+    container.stop()
+    assert(container.start())
     distribution['handler'].install_application(container, application, assume_yes=assume_yes)
     return 0

@@ -72,7 +72,7 @@ def add_mount_point(application, host_directory, guest_directory):
               application_settings['mount_points'])
 
 
-def configure(container, app_config_file=DEFAULT_CONFIG_FILE, mount_points=[]):
+def configure(container, distribution, app_config_file=DEFAULT_CONFIG_FILE, mount_points=[]):
     assert(container.save_config())
 
     config_file = os.path.join(container.get_config_path(),
@@ -85,6 +85,7 @@ def configure(container, app_config_file=DEFAULT_CONFIG_FILE, mount_points=[]):
     with open(config_file, 'wt') as f:
         # Write base template
         f.write(template.substitute(
+            distro_name=distribution['lxc_name'],
             rootfs=config.rootfs,
             container_name=config.container_name,
             hwaddr=config.hwaddr,
@@ -103,3 +104,4 @@ def configure(container, app_config_file=DEFAULT_CONFIG_FILE, mount_points=[]):
                         ))
 
     assert(container.load_config())
+    return config
