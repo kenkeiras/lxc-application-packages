@@ -1,12 +1,20 @@
 # coding: utf-8
 
 import string
-from . import debian
+from . import debian_sid
+from . import debian_stretch
 DEBIAN = {
     'name': 'debian',
     'lxc_name': 'debian',
-    'module': debian,
-    'handler': debian.handler,
+    'module': debian_sid,
+    'handler': debian_sid.handler,
+}
+
+DEBIAN_STRETCH = {
+    'name': 'debian_stretch',
+    'lxc_name': 'debian_stretch',
+    'module': debian_stretch,
+    'handler': debian_stretch.handler,
 }
 
 from . import gentoo
