@@ -2,6 +2,7 @@
 
 from . import collection
 from . import conversions
+from . import distributions
 
 from configparser import ConfigParser
 import itertools
@@ -68,8 +69,9 @@ def add_mount_point(application, host_directory, guest_directory):
     # Regenerate the configuration
     application_settings = collection.get_registry()[application]
     configure(container,
-              application_settings['configuration']['type'],
-              application_settings['mount_points'])
+              distribution=distributions.get_map()[application_settings['distribution']['name']],
+              app_config_file=application_settings['configuration']['type'],
+              mount_points=application_settings['mount_points'])
 
 
 def configure(container, distribution, app_config_file=DEFAULT_CONFIG_FILE, mount_points=[]):
@@ -77,14 +79,12 @@ def configure(container, distribution, app_config_file=DEFAULT_CONFIG_FILE, moun
 
     config_file = os.path.join(container.get_config_path(),
                                container.name, 'config')
-    config = Configuration(config_file)
 
+    config = Configuration(config_file)
     with open(app_config_file, 'rt') as f:
         template = string.Template(f.read())
 
-    with open(config_file, 'wt') as f:
-        # Write base template
-        f.write(template.substitute(
+    to_write = template.substitute(
             distro_name=distribution['lxc_name'],
             rootfs=config.rootfs,
             container_name=config.container_name,
@@ -92,7 +92,11 @@ def configure(container, distribution, app_config_file=DEFAULT_CONFIG_FILE, moun
             net_link=config.net_link,
             ipv4_addr=config.ipv4_addr,
             ipv4_gateway=config.ipv4_gateway,
-        ))
+        )
+
+    with open(config_file, 'wt') as f:
+        # Write base template
+        f.write(to_write)
 
         # Write mount points
         if len(mount_points) > 0:
