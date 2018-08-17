@@ -134,6 +134,8 @@ class DebianDerived:
     def configure_first_time(self, container, configuration):
         # Create the user
         username = getpass.getuser()
+        container.attach_wait(lxc.attach_run_command, ['sh', '-c', "echo nameserver 8.8.8.8 > /etc/resolv.conf"])
+
         container.attach_wait(lxc.attach_run_command, ['useradd', username])
         container.attach_wait(lxc.attach_run_command, ['mkdir', '/home/{}'.format(username)])
         container.attach_wait(lxc.attach_run_command, ['chown', '-R', username, '/home/{}'.format(username)])
